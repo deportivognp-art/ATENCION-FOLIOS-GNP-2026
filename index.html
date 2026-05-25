@@ -150,7 +150,7 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             margin-top: 4px;
-            max-height: 220px;
+            max-height: 250px;
             overflow-y: auto;
             z-index: 1000;
             padding: 5px;
@@ -168,6 +168,12 @@
             color: var(--text-muted);
             border-radius: 4px;
             cursor: pointer;
+        }
+
+        .multiselect-option.select-all-btn {
+            border-bottom: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+            font-weight: bold;
         }
 
         .multiselect-option:hover {
@@ -360,7 +366,7 @@
 
     <header>
         <div class="header-title-area">
-            <h1><i class="fa-solid fa-chart-column"></i> Dashboard Operativo de Folios <span>• Optimizado</span></h1>
+            <h1><i class="fa-solid fa-chart-column"></i> Dashboard Operativo de Folios <span>• Corrección Estricta</span></h1>
             <div class="url-loader">
                 <i class="fa-solid fa-link" style="align-self: center; color: var(--text-muted);"></i>
                 <input type="text" id="csvUrlInput" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfc5iZSyeet-ZAJQnbF3vWVNYpMIFZu2N4u2_VlA9rxGYUc8LN81q8V6kR6lXlLJioehyCY2GWFdBe/pub?output=csv" placeholder="Pegar URL pública CSV de Google Sheets">
@@ -427,7 +433,7 @@
             <div class="kpi-info">
                 <h3>Ubicaciones Registradas</h3>
                 <div class="kpi-value" id="kpiUbicaciones">0</div>
-                <div class="kpi-comparison">Áreas e instalaciones</div>
+                <div class="kpi-comparison">Áreas sin mezclar con edificio</div>
             </div>
             <div class="kpi-icon" style="color: var(--accent-emerald);"><i class="fa-solid fa-location-crosshairs"></i></div>
         </div>
@@ -436,17 +442,25 @@
     <!-- Charts Grid Layout -->
     <div class="dashboard-grid">
         
-        <!-- Distribución General por Categoría (Reemplaza la tendencia temporal) -->
-        <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-chart-bar"></i> Distribución de Folios por Fecha y Volumen Activo</div>
+        <!-- Distribución General por Frecuencia Corta -->
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-chart-bar"></i> Volumen de Folios Activos (Frecuencia Seleccionada)</div>
             <div class="chart-wrapper">
                 <canvas id="chartVolumenFecha"></canvas>
             </div>
         </div>
 
+        <!-- NUEVO GRÁFICO: Distribución Acumulada por Mes Histórico -->
+        <div class="chart-card">
+            <div class="chart-title"><i class="fa-solid fa-calendar-days"></i> Historial Acumulado de Folios por Mes</div>
+            <div class="chart-wrapper">
+                <canvas id="chartVolumenMensualFijo"></canvas>
+            </div>
+        </div>
+
         <!-- Top 10 Ubicaciones con más folios -->
         <div class="chart-card">
-            <div class="chart-title"><i class="fa-solid fa-ranking-star"></i> Top 10 Ubicaciones con Más Folios</div>
+            <div class="chart-title"><i class="fa-solid fa-ranking-star"></i> Top 10 Ubicaciones Exactas (Sin Edificio)</div>
             <div class="chart-wrapper">
                 <canvas id="chartTopUbicaciones"></canvas>
             </div>
@@ -454,7 +468,7 @@
 
         <!-- Top 10 Categorías con más folios -->
         <div class="chart-card">
-            <div class="chart-title"><i class="fa-solid fa-list-ol"></i> Top 10 Categorías con Más Folios</div>
+            <div class="chart-title"><i class="fa-solid fa-list-ol"></i> Top 10 Categorías de Servicio</div>
             <div class="chart-wrapper">
                 <canvas id="chartTopCategorias"></canvas>
             </div>
@@ -462,7 +476,7 @@
 
         <!-- Matriz cruzada: Servicios vs Ubicaciones -->
         <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-table-cells"></i> Distribución por Ubicación y Tipo de Servicio (Matriz Operativa)</div>
+            <div class="chart-title"><i class="fa-solid fa-table-cells"></i> Distribución de Carga: Ubicación vs Categoría</div>
             <div class="table-container">
                 <table id="matrixTable">
                     <thead></thead>
@@ -473,7 +487,7 @@
 
         <!-- Tabla detallada general ordenada -->
         <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-list-check"></i> Historial Detallado y Validación de Datos (Fecha, Ubicación, Categoría)</div>
+            <div class="chart-title"><i class="fa-solid fa-list-check"></i> Historial Limpio de Datos (Fecha, Ubicación, Categoría)</div>
             <div class="table-container">
                 <table id="detailedTable">
                     <thead>
@@ -497,8 +511,9 @@
         let currentFrecuencia = 'diario';
         let charts = {};
         let selectedFilters = { mes: [], ubicacion: [], categoria: [] };
+        let masterLists = { mes: [], ubicacion: [], categoria: [] };
 
-        // Robust CSV Parser that handles commas inside quotes or text strings safely (solves scrambled text columns)
+        // Safe CSV line splitter that carefully tracks quoted blocks to avoid column shifting
         function parseCSVLine(text) {
             let p = '', r = [];
             let q = false;
@@ -513,17 +528,17 @@
         }
 
         function generateMockData() {
-            const categories = ['Aire Acondicionado', 'Hidrosanitario', 'Eléctrico', 'Mantenimiento General', 'Albercas', 'Iluminación LED', 'Sistemas de Bombeo'];
-            const locations = ['Piso 1 Oficinas', 'Planta Baja', 'Sótano de Máquinas', 'Piso 2 Dirección', 'Área de Calderas', 'Zona de Comedor', 'Rack de Datos', 'Sanitarios Generales', 'Estacionamiento'];
+            const categories = ['Aire Acondicionado', 'Hidrosanitario', 'Eléctrico', 'Mantenimiento General', 'Albercas', 'Iluminación LED'];
+            const locations = ['Planta Baja', 'Sótano de Máquinas', 'Piso 2 Dirección', 'Área de Calderas', 'Zona de Comedor', 'Rack de Datos', 'Sanitarios Generales', 'Estacionamiento'];
             let data = [];
             let now = new Date();
-            for(let i = 30; i >= 0; i--) {
+            for(let i = 90; i >= 0; i--) {
                 let d = new Date(); d.setDate(now.getDate() - i);
-                let count = Math.floor(Math.random() * 6) + 3;
+                let count = Math.floor(Math.random() * 4) + 2;
                 for(let j=0; j<count; j++) {
                     data.push({
                         'Fecha': d.toLocaleDateString('es-MX', {year: 'numeric', month: '2-digit', day: '2-digit'}),
-                        'Folio': 'FOL-' + (3400 + i * 5 + j),
+                        'Folio': 'FOL-' + (4100 + i * 4 + j),
                         'Ubicacion': locations[Math.floor(Math.random() * locations.length)],
                         'Categoria': categories[Math.floor(Math.random() * categories.length)],
                         '_dateObj': new Date(d)
@@ -562,7 +577,7 @@
                 .then(res => { if(!res.ok) throw new Error(); return res.text(); })
                 .then(text => parseCSV(text))
                 .catch(() => {
-                    console.log("Cargando base de simulación adaptada al nuevo esquema sin edificios...");
+                    console.log("Cargando entorno de simulación sin datos cruzados de edificio...");
                     rawData = generateMockData();
                     buildFilters();
                 });
@@ -574,15 +589,21 @@
             let lines = text.split(/\r?\n/);
             if(lines.length < 2) return;
             
-            let headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/["']/g, ""));
+            let headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/["']/g, "").trim());
             
-            // Map indexes looking cleanly for keywords
-            let dateIdx = headers.findIndex(h => h.includes('fecha'));
-            let folioIdx = headers.findIndex(h => h.includes('folio'));
-            let locIdx = headers.findIndex(h => h.includes('ubicac'));
-            let catIdx = headers.findIndex(h => h.includes('categor') || h.includes('servicio') || h.includes('reporte'));
+            // STRICT INDEX MAPPING - Avoids grabbing 'edificio' instead of 'ubicacion'
+            let dateIdx = headers.findIndex(h => h === 'fecha');
+            let folioIdx = headers.findIndex(h => h === 'folio' || h === 'id');
+            let locIdx = headers.findIndex(h => h === 'ubicacion' || h === 'ubicación');
+            let catIdx = headers.findIndex(h => h === 'categoria' || h === 'categoría' || h === 'servicio');
 
-            // Fallback rules if exact names differ
+            // Secure back-up filters if strict check yields nothing
+            if(dateIdx === -1) dateIdx = headers.findIndex(h => h.includes('fecha'));
+            if(folioIdx === -1) folioIdx = headers.findIndex(h => h.includes('folio'));
+            if(locIdx === -1) locIdx = headers.findIndex(h => h.includes('ubicac') && !h.includes('edif'));
+            if(catIdx === -1) catIdx = headers.findIndex(h => h.includes('categor') || h.includes('serv'));
+
+            // Final fallback assignments
             if(dateIdx === -1) dateIdx = 0;
             if(folioIdx === -1) folioIdx = 1;
             if(locIdx === -1) locIdx = 2;
@@ -601,11 +622,15 @@
                     else dateObj = new Date(parts[2], parts[1]-1, parts[0]);
                 }
 
+                // Clean string quotes
+                let rawUbi = (cols[locIdx] || 'Área General').replace(/["']/g, "").trim();
+                let rawCat = (cols[catIdx] || 'Mantenimiento General').replace(/["']/g, "").trim();
+
                 loadedData.push({
                     'Fecha': dateStr,
-                    'Folio': cols[folioIdx] || ('F-' + (2000 + i)),
-                    'Ubicacion': cols[locIdx] || 'Área General',
-                    'Categoria': cols[catIdx] || 'Mantenimiento General',
+                    'Folio': (cols[folioIdx] || ('F-' + (2000 + i))).replace(/["']/g, "").trim(),
+                    'Ubicacion': rawUbi,
+                    'Categoria': rawCat,
                     '_dateObj': dateObj
                 });
             }
@@ -627,9 +652,18 @@
                 if(item.Categoria) categorias.add(item.Categoria);
             });
 
-            renderOptions('dropdownMes', Array.from(meses).sort(), 'mes');
-            renderOptions('dropdownUbicacion', Array.from(ubicaciones).sort(), 'ubicacion');
-            renderOptions('dropdownCategoria', Array.from(categorias).sort(), 'categoria');
+            masterLists.mes = Array.from(meses).sort();
+            masterLists.ubicacion = Array.from(ubicaciones).sort();
+            masterLists.categoria = Array.from(categorias).sort();
+
+            // Default to empty arrays -> means no explicit single filter yet, handles as 'All'
+            selectedFilters.mes = [];
+            selectedFilters.ubicacion = [];
+            selectedFilters.categoria = [];
+
+            renderOptions('dropdownMes', masterLists.mes, 'mes');
+            renderOptions('dropdownUbicacion', masterLists.ubicacion, 'ubicacion');
+            renderOptions('dropdownCategoria', masterLists.categoria, 'categoria');
 
             applyFilters();
         }
@@ -637,6 +671,31 @@
         function renderOptions(dropdownId, list, type) {
             let container = document.getElementById(dropdownId);
             container.innerHTML = '';
+            
+            // Add "TODOS" option at the very top
+            let allDiv = document.createElement('div');
+            allDiv.className = 'multiselect-option select-all-btn';
+            allDiv.innerHTML = `<i class="fa-solid fa-鋪"></i> <span>[ SELECCIONAR TODOS ]</span>`;
+            allDiv.onclick = () => {
+                let checkBoxes = container.querySelectorAll('input[type="checkbox"]');
+                let genericTextSpan = document.getElementById('text' + type.charAt(0).toUpperCase() + type.slice(1));
+                
+                if (selectedFilters[type].length === list.length) {
+                    // If all are selected, uncheck everything
+                    selectedFilters[type] = [];
+                    checkBoxes.forEach(cb => cb.checked = false);
+                    genericTextSpan.innerText = (type === 'ubicacion' ? 'Todas' : 'Todos');
+                } else {
+                    // Else, check everything
+                    selectedFilters[type] = [...list];
+                    checkBoxes.forEach(cb => cb.checked = true);
+                    genericTextSpan.innerText = "Todos (" + list.length + ")";
+                }
+                applyFilters();
+            };
+            container.appendChild(allDiv);
+
+            // Add standard data options
             list.forEach(item => {
                 let div = document.createElement('div');
                 div.className = 'multiselect-option';
@@ -647,11 +706,18 @@
                 checkbox.checked = selectedFilters[type].includes(item);
                 
                 checkbox.addEventListener('change', (e) => {
-                    if(e.target.checked) selectedFilters[type].push(item);
-                    else selectedFilters[type] = selectedFilters[type].filter(x => x !== item);
+                    if(e.target.checked) {
+                        selectedFilters[type].push(item);
+                    } else {
+                        selectedFilters[type] = selectedFilters[type].filter(x => x !== item);
+                    }
                     
-                    document.getElementById('text' + type.charAt(0).toUpperCase() + type.slice(1)).innerText = 
-                        selectedFilters[type].length > 0 ? `${selectedFilters[type].length} sel.` : (type === 'ubicacion' ? 'Todas' : 'Todos');
+                    let labelContainer = document.getElementById('text' + type.charAt(0).toUpperCase() + type.slice(1));
+                    if (selectedFilters[type].length === 0 || selectedFilters[type].length === list.length) {
+                        labelContainer.innerText = (type === 'ubicacion' ? 'Todas' : 'Todos');
+                    } else {
+                        labelContainer.innerText = `${selectedFilters[type].length} sel.`;
+                    }
                     applyFilters();
                 });
 
@@ -668,6 +734,7 @@
         function applyFilters() {
             filteredData = rawData.filter(item => {
                 let mLabel = item._dateObj.toLocaleString('es-MX', { month: 'long', year: 'numeric' });
+                
                 if(selectedFilters.mes.length > 0 && !selectedFilters.mes.includes(mLabel)) return false;
                 if(selectedFilters.ubicacion.length > 0 && !selectedFilters.ubicacion.includes(item.Ubicacion)) return false;
                 if(selectedFilters.categoria.length > 0 && !selectedFilters.categoria.includes(item.Categoria)) return false;
@@ -696,9 +763,8 @@
 
         function updateCharts() {
             Object.keys(charts).forEach(k => { if(charts[k]) charts[k].destroy(); });
-            const colorsNeon = ['#06b6d4', '#f97316', '#10b981', '#a855f7', '#ec4899', '#eab308', '#3b82f6'];
 
-            // 1. Chart Volumen General por Fecha
+            // 1. Chart Volumen Variable por Fecha
             let timeCounts = {};
             filteredData.sort((a,b) => a._dateObj - b._dateObj).forEach(i => {
                 let lbl = getFrequencyLabel(i._dateObj);
@@ -710,7 +776,7 @@
                 data: {
                     labels: Object.keys(timeCounts),
                     datasets: [{
-                        label: 'Cantidad de Folios Atendidos',
+                        label: 'Folios Atendidos',
                         data: Object.values(timeCounts),
                         backgroundColor: '#06b6d4',
                         borderRadius: 4
@@ -719,7 +785,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#f8fafc' } } },
+                    plugins: { legend: { display: false } },
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
                         y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
@@ -727,7 +793,38 @@
                 }
             });
 
-            // 2. Top 10 Ubicaciones (Horizontal Bar)
+            // 2. NUEVO CHART: Volumen Fijo Acumulado por Mes
+            let monthlyDistribution = {};
+            filteredData.forEach(i => {
+                if(i._dateObj && !isNaN(i._dateObj)){
+                    let mName = i._dateObj.toLocaleString('es-MX', { month: 'long' });
+                    monthlyDistribution[mName] = (monthlyDistribution[mName] || 0) + 1;
+                }
+            });
+
+            charts['mensualFijo'] = new Chart(document.getElementById('chartVolumenMensualFFixed').getContext('2d') || document.getElementById('chartVolumenMensualFijo').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(monthlyDistribution).map(m => m.toUpperCase()),
+                    datasets: [{
+                        label: 'Total de Folios por Mes',
+                        data: Object.values(monthlyDistribution),
+                        backgroundColor: '#ec4899',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            // 3. Top 10 Ubicaciones (Horizontal Bar)
             let ubiCounts = {};
             filteredData.forEach(i => { ubiCounts[i.Ubicacion] = (ubiCounts[i.Ubicacion] || 0) + 1; });
             let sortedUbis = Object.entries(ubiCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
@@ -750,7 +847,7 @@
                 }
             });
 
-            // 3. Top 10 Categorías (Vertical Bar)
+            // 4. Top 10 Categorías (Vertical Bar)
             let catCounts = {};
             filteredData.forEach(i => { catCounts[i.Categoria] = (catCounts[i.Categoria] || 0) + 1; });
             let sortedCats = Object.entries(catCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
@@ -774,23 +871,29 @@
         }
 
         function renderTables() {
-            // Historial detallado general
+            // Detailed clean history table
             let tbody = document.querySelector('#detailedTable tbody');
             tbody.innerHTML = '';
-            filteredData.slice(0, 20).forEach(item => {
+            filteredData.slice(0, 25).forEach(item => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `<td>${item.Fecha}</td><td><span class="badge">${item.Folio}</span></td><td>${item.Ubicacion}</td><td>${item.Categoria}</td>`;
                 tbody.appendChild(tr);
             });
 
-            // Matriz Dinámica: Categorías vs Ubicaciones
+            // Dynamic Cross Matrix: Categories vs Clean Locations
             let uniqueCats = Array.from(new Set(filteredData.map(i => i.Categoria))).slice(0, 5);
-            let uniqueUbis = Array.from(new Set(filteredData.map(i => i.Ubicacion))).slice(0, 12);
+            let uniqueUbis = Array.from(new Set(filteredData.map(i => i.Ubicacion))).slice(0, 15);
             
             let matrixThead = document.querySelector('#matrixTable thead');
             let matrixTbody = document.querySelector('#matrixTable tbody');
 
-            let headerHtml = '<tr><th>Ubicaciones Históricas</th>';
+            if(uniqueCats.length === 0) {
+                matrixThead.innerHTML = '';
+                matrixTbody.innerHTML = '<tr><td>No hay datos disponibles con los filtros actuales.</td></tr>';
+                return;
+            }
+
+            let headerHtml = '<tr><th>Ubicación Fiel (Filtrada)</th>';
             uniqueCats.forEach(c => { headerHtml += `<th>${c}</th>`; });
             headerHtml += '<th>Total</th></tr>';
             matrixThead.innerHTML = headerHtml;
