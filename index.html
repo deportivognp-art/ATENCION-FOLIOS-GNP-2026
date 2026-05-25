@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Control Operativo Avanzado</title>
+    <title>Dashboard Control Operativo de Folios</title>
     <!-- Chart.js and FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +18,6 @@
             --accent-orange: #f97316;
             --accent-emerald: #10b981;
             --accent-pink: #ec4899;
-            --accent-purple: #a855f7;
             --border-color: #334155;
         }
 
@@ -99,14 +98,12 @@
             transition: all 0.2s;
         }
 
-        .url-loader button:hover {
-            opacity: 0.9;
-        }
+        .url-loader button:hover { opacity: 0.9; }
 
         /* Controls Panel */
         .controls-panel {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             background: var(--bg-primary);
             padding: 15px;
@@ -128,7 +125,6 @@
             text-transform: uppercase;
         }
 
-        /* Custom Multi-select styles */
         .multiselect-container {
             background: var(--bg-secondary);
             color: var(--text-main);
@@ -161,9 +157,7 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
 
-        .multiselect-dropdown.show {
-            display: block;
-        }
+        .multiselect-dropdown.show { display: block; }
 
         .multiselect-option {
             padding: 8px;
@@ -215,7 +209,7 @@
         /* KPIs */
         .kpi-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -244,7 +238,6 @@
         .kpi-card.folios::before { background-color: var(--accent-cyan); }
         .kpi-card.categorias::before { background-color: var(--accent-orange); }
         .kpi-card.ubicaciones::before { background-color: var(--accent-emerald); }
-        .kpi-card.edificios::before { background-color: var(--accent-purple); }
 
         .kpi-info h3 {
             font-size: 12px;
@@ -262,10 +255,7 @@
 
         .kpi-comparison {
             font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--accent-cyan);
+            color: var(--text-muted);
         }
 
         .kpi-icon {
@@ -273,7 +263,7 @@
             opacity: 0.3;
         }
 
-        /* Dashboard Grid Layout */
+        /* Grid */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -282,9 +272,7 @@
         }
 
         @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
 
         .chart-card {
@@ -302,9 +290,7 @@
         }
 
         @media (max-width: 1024px) {
-            .chart-card.full-width {
-                grid-column: span 1;
-            }
+            .chart-card.full-width { grid-column: span 1; }
         }
 
         .chart-title {
@@ -318,14 +304,12 @@
             padding-bottom: 10px;
         }
 
-        .chart-title i {
-            color: var(--accent-cyan);
-        }
+        .chart-title i { color: var(--accent-cyan); }
 
         .chart-wrapper {
             position: relative;
             width: 100%;
-            min-height: 260px;
+            min-height: 280px;
             max-height: 400px;
         }
 
@@ -376,18 +360,18 @@
 
     <header>
         <div class="header-title-area">
-            <h1><i class="fa-solid fa-chart-pie"></i> Dashboard Operativo de Folios <span>• Live</span></h1>
+            <h1><i class="fa-solid fa-chart-column"></i> Dashboard Operativo de Folios <span>• Optimizado</span></h1>
             <div class="url-loader">
                 <i class="fa-solid fa-link" style="align-self: center; color: var(--text-muted);"></i>
-                <input type="text" id="csvUrlInput" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfc5iZSyeet-ZAJQnbF3vWVNYpMIFZu2N4u2_VlA9rxGYUc8LN81q8V6kR6lXlLJioehyCY2GWFdBe/pub?output=csv" placeholder="Pegar URL pública de Google Sheets en CSV">
-                <button onclick="reloadData()"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+                <input type="text" id="csvUrlInput" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfc5iZSyeet-ZAJQnbF3vWVNYpMIFZu2N4u2_VlA9rxGYUc8LN81q8V6kR6lXlLJioehyCY2GWFdBe/pub?output=csv" placeholder="Pegar URL pública CSV de Google Sheets">
+                <button onclick="reloadData()"><i class="fa-solid fa-rotate"></i> Recargar</button>
             </div>
         </div>
 
-        <!-- Controles Interactivos Inteligentes -->
+        <!-- Controles de Selección Múltiple -->
         <div class="controls-panel">
             <div class="control-group">
-                <label>Frecuencia Visual</label>
+                <label>Frecuencia de Gráficos</label>
                 <div class="time-toggle">
                     <button class="time-btn active" id="btnDiario" onclick="setTimeAgg('diario')">Diario</button>
                     <button class="time-btn" id="btnSemanal" onclick="setTimeAgg('semanal')">Semanal</button>
@@ -395,7 +379,6 @@
                 </div>
             </div>
 
-            <!-- Multi-select para Mes -->
             <div class="control-group">
                 <label>Mes</label>
                 <div class="multiselect-container" onclick="toggleDropdown('dropdownMes')">
@@ -404,31 +387,20 @@
                 <div id="dropdownMes" class="multiselect-dropdown"></div>
             </div>
 
-            <!-- Multi-select para Edificio -->
             <div class="control-group">
-                <label>Edificio</label>
-                <div class="multiselect-container" onclick="toggleDropdown('dropdownEdificio')">
-                    <span id="textEdificio">Todos</span> <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div id="dropdownEdificio" class="multiselect-dropdown"></div>
-            </div>
-
-            <!-- Multi-select Cascadable/Dependiente para Ubicación -->
-            <div class="control-group">
-                <label>Ubicación (Filtrado por Edificio)</label>
+                <label>Ubicación</label>
                 <div class="multiselect-container" onclick="toggleDropdown('dropdownUbicacion')">
                     <span id="textUbicacion">Todas</span> <i class="fa-solid fa-chevron-down"></i>
                 </div>
                 <div id="dropdownUbicacion" class="multiselect-dropdown"></div>
             </div>
 
-            <!-- Multi-select para Servicio -->
             <div class="control-group">
-                <label>Tipo Servicio</label>
-                <div class="multiselect-container" onclick="toggleDropdown('dropdownServicio')">
-                    <span id="textServicio">Todos</span> <i class="fa-solid fa-chevron-down"></i>
+                <label>Categoría de Servicio</label>
+                <div class="multiselect-container" onclick="toggleDropdown('dropdownCategoria')">
+                    <span id="textCategoria">Todas</span> <i class="fa-solid fa-chevron-down"></i>
                 </div>
-                <div id="dropdownServicio" class="multiselect-dropdown"></div>
+                <div id="dropdownCategoria" class="multiselect-dropdown"></div>
             </div>
         </div>
     </header>
@@ -439,64 +411,40 @@
             <div class="kpi-info">
                 <h3>Total Folios</h3>
                 <div class="kpi-value" id="kpiTotalFolios">0</div>
-                <div class="kpi-comparison" id="compFolios">Mes Actual Seleccionado</div>
+                <div class="kpi-comparison">Métricas en tiempo real</div>
             </div>
-            <div class="kpi-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-file-invoice"></i></div>
+            <div class="kpi-icon" style="color: var(--accent-cyan);"><i class="fa-solid fa-file-lines"></i></div>
         </div>
         <div class="kpi-card categorias">
             <div class="kpi-info">
                 <h3>Tipos de Categorías</h3>
                 <div class="kpi-value" id="kpiCategorias">0</div>
-                <div class="kpi-comparison" style="color: var(--text-muted)">Servicios activos</div>
+                <div class="kpi-comparison">Servicios clasificados</div>
             </div>
             <div class="kpi-icon" style="color: var(--accent-orange);"><i class="fa-solid fa-tags"></i></div>
         </div>
         <div class="kpi-card ubicaciones">
             <div class="kpi-info">
-                <h3>Ubicaciones</h3>
+                <h3>Ubicaciones Registradas</h3>
                 <div class="kpi-value" id="kpiUbicaciones">0</div>
-                <div class="kpi-comparison" style="color: var(--text-muted)">Puntos activos</div>
+                <div class="kpi-comparison">Áreas e instalaciones</div>
             </div>
-            <div class="kpi-icon" style="color: var(--accent-emerald);"><i class="fa-solid fa-location-dot"></i></div>
-        </div>
-        <div class="kpi-card edificios">
-            <div class="kpi-info">
-                <h3>Edificios</h3>
-                <div class="kpi-value" id="kpiEdificios">0</div>
-                <div class="kpi-comparison" style="color: var(--text-muted)">Infraestructuras</div>
-            </div>
-            <div class="kpi-icon" style="color: var(--accent-purple);"><i class="fa-solid fa-building"></i></div>
+            <div class="kpi-icon" style="color: var(--accent-emerald);"><i class="fa-solid fa-location-crosshairs"></i></div>
         </div>
     </div>
 
-    <!-- Dashboard Main Grid -->
+    <!-- Charts Grid Layout -->
     <div class="dashboard-grid">
         
-        <!-- Tendencia del mes actual (Sin comparativas) -->
+        <!-- Distribución General por Categoría (Reemplaza la tendencia temporal) -->
         <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-chart-line"></i> Tendencia Temporal de Folios (Periodo/Mes Actual)</div>
+            <div class="chart-title"><i class="fa-solid fa-chart-bar"></i> Distribución de Folios por Fecha y Volumen Activo</div>
             <div class="chart-wrapper">
-                <canvas id="chartTendencia"></canvas>
+                <canvas id="chartVolumenFecha"></canvas>
             </div>
         </div>
 
-        <!-- Distribución por Ubicación -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fa-solid fa-chart-pie"></i> Distribución de Reportes por Ubicación</div>
-            <div class="chart-wrapper">
-                <canvas id="chartUbicacionDist"></canvas>
-            </div>
-        </div>
-
-        <!-- Folios por Edificio -->
-        <div class="chart-card">
-            <div class="chart-title"><i class="fa-solid fa-chart-bar"></i> Distribución General por Edificios</div>
-            <div class="chart-wrapper">
-                <canvas id="chartEdificioFolios"></canvas>
-            </div>
-        </div>
-
-        <!-- Top 10 Ubicaciones -->
+        <!-- Top 10 Ubicaciones con más folios -->
         <div class="chart-card">
             <div class="chart-title"><i class="fa-solid fa-ranking-star"></i> Top 10 Ubicaciones con Más Folios</div>
             <div class="chart-wrapper">
@@ -504,17 +452,17 @@
             </div>
         </div>
 
-        <!-- Top 10 Categorías -->
+        <!-- Top 10 Categorías con más folios -->
         <div class="chart-card">
-            <div class="chart-title"><i class="fa-solid fa-list-ol"></i> Top 10 Categorías de Servicio con Más Folios</div>
+            <div class="chart-title"><i class="fa-solid fa-list-ol"></i> Top 10 Categorías con Más Folios</div>
             <div class="chart-wrapper">
                 <canvas id="chartTopCategorias"></canvas>
             </div>
         </div>
 
-        <!-- Matriz Tipos de Servicios por Edificios -->
+        <!-- Matriz cruzada: Servicios vs Ubicaciones -->
         <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-table-cells"></i> Tipos de Servicios Detallados por Edificios (Matriz Operativa)</div>
+            <div class="chart-title"><i class="fa-solid fa-table-cells"></i> Distribución por Ubicación y Tipo de Servicio (Matriz Operativa)</div>
             <div class="table-container">
                 <table id="matrixTable">
                     <thead></thead>
@@ -523,18 +471,17 @@
             </div>
         </div>
 
-        <!-- Tabla Detallada por Edificios -->
+        <!-- Tabla detallada general ordenada -->
         <div class="chart-card full-width">
-            <div class="chart-title"><i class="fa-solid fa-table"></i> Tabla General Resumida e Historial de Folios por Edificio</div>
+            <div class="chart-title"><i class="fa-solid fa-list-check"></i> Historial Detallado y Validación de Datos (Fecha, Ubicación, Categoría)</div>
             <div class="table-container">
                 <table id="detailedTable">
                     <thead>
                         <tr>
                             <th>Fecha</th>
-                            <th>Folio</th>
-                            <th>Edificio</th>
+                            <th>Folio Único</th>
                             <th>Ubicación</th>
-                            <th>Tipo de Reporte / Servicio</th>
+                            <th>Categoría de Servicio</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -549,49 +496,36 @@
         let filteredData = [];
         let currentFrecuencia = 'diario';
         let charts = {};
+        let selectedFilters = { mes: [], ubicacion: [], categoria: [] };
 
-        // Selections holding multi-select values
-        let selectedFilters = {
-            mes: [],
-            edificio: [],
-            ubicacion: [],
-            servicio: []
-        };
+        // Robust CSV Parser that handles commas inside quotes or text strings safely (solves scrambled text columns)
+        function parseCSVLine(text) {
+            let p = '', r = [];
+            let q = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (c === '"') { q = !q; }
+                else if (c === ',' && !q) { r.push(p.trim()); p = ''; }
+                else { p += c; }
+            }
+            r.push(p.trim());
+            return r;
+        }
 
         function generateMockData() {
-            const services = ['Aire Acondicionado', 'Hidrosanitario', 'Eléctrico', 'Mantenimiento General', 'Albercas', 'Iluminación LED', 'Sistemas de Bombeo'];
-            const bldgLocMapping = {
-                'Edificio 1': ['Piso 1 - Oficinas', 'Planta Baja A', 'Sótano Técnico A'],
-                'Edificio 2': ['Piso 2 - Dirección', 'Planta Baja B', 'Site de Telecom'],
-                'Edificio 3': ['Área de Calderas', 'Zona Común Norte', 'Rack Principal'],
-                'Edificio 4': ['Sanitarios Hombres', 'Sanitarios Mujeres', 'Estacionamiento E4'],
-                'Edificio 5': ['Azotea Maquinaria', 'Pasillo A'],
-                'Comedor': ['Cocina Caliente', 'Área de Comensales', 'Almacén Seco']
-            };
-            
+            const categories = ['Aire Acondicionado', 'Hidrosanitario', 'Eléctrico', 'Mantenimiento General', 'Albercas', 'Iluminación LED', 'Sistemas de Bombeo'];
+            const locations = ['Piso 1 Oficinas', 'Planta Baja', 'Sótano de Máquinas', 'Piso 2 Dirección', 'Área de Calderas', 'Zona de Comedor', 'Rack de Datos', 'Sanitarios Generales', 'Estacionamiento'];
             let data = [];
-            let folioCounter = 2100;
-            const now = new Date();
-            
-            for(let i = 45; i >= 0; i--) {
-                let d = new Date();
-                d.setDate(now.getDate() - i);
-                
-                let issuesCount = Math.floor(Math.random() * 6) + 3;
-                for(let j = 0; j < issuesCount; j++) {
-                    let bldgs = Object.keys(bldgLocMapping);
-                    let building = bldgs[Math.floor(Math.random() * bldgs.length)];
-                    let locs = bldgLocMapping[building];
-                    let location = locs[Math.floor(Math.random() * locs.length)];
-                    let service = services[Math.floor(Math.random() * services.length)];
-                    folioCounter++;
-                    
+            let now = new Date();
+            for(let i = 30; i >= 0; i--) {
+                let d = new Date(); d.setDate(now.getDate() - i);
+                let count = Math.floor(Math.random() * 6) + 3;
+                for(let j=0; j<count; j++) {
                     data.push({
                         'Fecha': d.toLocaleDateString('es-MX', {year: 'numeric', month: '2-digit', day: '2-digit'}),
-                        'Folio': 'F-' + folioCounter,
-                        'Edificio': building,
-                        'Ubicacion': location,
-                        'Servicio': service,
+                        'Folio': 'FOL-' + (3400 + i * 5 + j),
+                        'Ubicacion': locations[Math.floor(Math.random() * locations.length)],
+                        'Categoria': categories[Math.floor(Math.random() * categories.length)],
                         '_dateObj': new Date(d)
                     });
                 }
@@ -601,7 +535,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardData();
-            // Close dropdowns on outside click
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.control-group')) {
                     document.querySelectorAll('.multiselect-dropdown').forEach(d => d.classList.remove('show'));
@@ -626,35 +559,41 @@
         function loadDashboardData() {
             const url = document.getElementById('csvUrlInput').value;
             fetch(url)
-                .then(response => { if (!response.ok) throw new Error(); return response.text(); })
+                .then(res => { if(!res.ok) throw new Error(); return res.text(); })
                 .then(text => parseCSV(text))
                 .catch(() => {
-                    console.log("Cargando set relacional multinivel simulado...");
+                    console.log("Cargando base de simulación adaptada al nuevo esquema sin edificios...");
                     rawData = generateMockData();
-                    buildMultiSelectFilters();
+                    buildFilters();
                 });
         }
 
         function reloadData() { loadDashboardData(); }
 
         function parseCSV(text) {
-            let lines = text.split('\n');
+            let lines = text.split(/\r?\n/);
             if(lines.length < 2) return;
-            let headers = lines[0].split(',').map(h => h.trim().replace(/["']/g, ""));
             
-            let dateIdx = headers.findIndex(h => h.toLowerCase().includes('fecha')) ?? 0;
-            let folioIdx = headers.findIndex(h => h.toLowerCase().includes('folio')) ?? 1;
-            let bldgIdx = headers.findIndex(h => h.toLowerCase().includes('edificio')) ?? 2;
-            let locIdx = headers.findIndex(h => h.toLowerCase().includes('ubicac')) ?? 3;
-            let servIdx = headers.findIndex(h => h.toLowerCase().includes('servicio') || h.toLowerCase().includes('reporte') || h.toLowerCase().includes('categor')) ?? 4;
+            let headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/["']/g, ""));
+            
+            // Map indexes looking cleanly for keywords
+            let dateIdx = headers.findIndex(h => h.includes('fecha'));
+            let folioIdx = headers.findIndex(h => h.includes('folio'));
+            let locIdx = headers.findIndex(h => h.includes('ubicac'));
+            let catIdx = headers.findIndex(h => h.includes('categor') || h.includes('servicio') || h.includes('reporte'));
+
+            // Fallback rules if exact names differ
+            if(dateIdx === -1) dateIdx = 0;
+            if(folioIdx === -1) folioIdx = 1;
+            if(locIdx === -1) locIdx = 2;
+            if(catIdx === -1) catIdx = 3;
 
             let loadedData = [];
             for(let i = 1; i < lines.length; i++) {
-                if(!lines[i]) continue;
-                let cols = lines[i].split(',').map(c => c.trim().replace(/["']/g, ""));
-                if(cols.length <= Math.max(dateIdx, folioIdx, bldgIdx, locIdx, servIdx)) continue;
-
-                let dateStr = cols[dateIdx];
+                if(!lines[i].trim()) continue;
+                let cols = parseCSVLine(lines[i]);
+                
+                let dateStr = cols[dateIdx] || '';
                 let parts = dateStr.split(/[-/]/);
                 let dateObj = new Date();
                 if(parts.length === 3) {
@@ -664,42 +603,40 @@
 
                 loadedData.push({
                     'Fecha': dateStr,
-                    'Folio': cols[folioIdx] || ('F-' + (1000 + i)),
-                    'Edificio': cols[bldgIdx] || 'No Especificado',
-                    'Ubicacion': cols[locIdx] || 'General',
-                    'Servicio': cols[servIdx] || 'Mantenimiento',
+                    'Folio': cols[folioIdx] || ('F-' + (2000 + i)),
+                    'Ubicacion': cols[locIdx] || 'Área General',
+                    'Categoria': cols[catIdx] || 'Mantenimiento General',
                     '_dateObj': dateObj
                 });
             }
             rawData = loadedData;
-            buildMultiSelectFilters();
+            buildFilters();
         }
 
-        function buildMultiSelectFilters() {
+        function buildFilters() {
             let meses = new Set();
-            let edificios = new Set();
-            let servicios = new Set();
+            let ubicaciones = new Set();
+            let categorias = new Set();
 
             rawData.forEach(item => {
-                let mLabel = item._dateObj.toLocaleString('es-MX', { month: 'long', year: 'numeric' });
-                if(item._dateObj && !isNaN(item._dateObj)) meses.add(mLabel);
-                if(item.Edificio) edificios.add(item.Edificio);
-                if(item.Servicio) servicios.add(item.Servicio);
+                if(item._dateObj && !isNaN(item._dateObj)) {
+                    let mLabel = item._dateObj.toLocaleString('es-MX', { month: 'long', year: 'numeric' });
+                    meses.add(mLabel);
+                }
+                if(item.Ubicacion) ubicaciones.add(item.Ubicacion);
+                if(item.Categoria) categorias.add(item.Categoria);
             });
 
-            renderDropdownOptions('dropdownMes', Array.from(meses).sort(), 'mes');
-            renderDropdownOptions('dropdownEdificio', Array.from(edificios).sort(), 'edificio');
-            renderDropdownOptions('dropdownServicio', Array.from(servicios).sort(), 'servicio');
+            renderOptions('dropdownMes', Array.from(meses).sort(), 'mes');
+            renderOptions('dropdownUbicacion', Array.from(ubicaciones).sort(), 'ubicacion');
+            renderOptions('dropdownCategoria', Array.from(categorias).sort(), 'categoria');
 
-            // Initial rebuild for locations cascade
-            rebuildUbicacionesCascade();
             applyFilters();
         }
 
-        function renderDropdownOptions(dropdownId, list, type) {
+        function renderOptions(dropdownId, list, type) {
             let container = document.getElementById(dropdownId);
             container.innerHTML = '';
-            
             list.forEach(item => {
                 let div = document.createElement('div');
                 div.className = 'multiselect-option';
@@ -710,19 +647,11 @@
                 checkbox.checked = selectedFilters[type].includes(item);
                 
                 checkbox.addEventListener('change', (e) => {
-                    if(e.target.checked) {
-                        selectedFilters[type].push(item);
-                    } else {
-                        selectedFilters[type] = selectedFilters[type].filter(x => x !== item);
-                    }
+                    if(e.target.checked) selectedFilters[type].push(item);
+                    else selectedFilters[type] = selectedFilters[type].filter(x => x !== item);
                     
                     document.getElementById('text' + type.charAt(0).toUpperCase() + type.slice(1)).innerText = 
-                        selectedFilters[type].length > 0 ? `${selectedFilters[type].length} sel.` : 'Todos';
-
-                    if(type === 'edificio') {
-                        // Cascade triggers dynamic location rewrite
-                        rebuildUbicacionesCascade();
-                    }
+                        selectedFilters[type].length > 0 ? `${selectedFilters[type].length} sel.` : (type === 'ubicacion' ? 'Todas' : 'Todos');
                     applyFilters();
                 });
 
@@ -736,39 +665,18 @@
             });
         }
 
-        function rebuildUbicacionesCascade() {
-            // Filter locations based purely on currently selected buildings
-            let validLocations = new Set();
-            rawData.forEach(item => {
-                if(selectedFilters.edificio.length === 0 || selectedFilters.edificio.includes(item.Edificio)) {
-                    if(item.Ubicacion) validLocations.add(item.Ubicacion);
-                }
-            });
-
-            // Retain selected locations only if they are still valid in the new cascade
-            selectedFilters.ubicacion = selectedFilters.ubicacion.filter(u => validLocations.has(u));
-            document.getElementById('textUbicacion').innerText = 
-                selectedFilters.ubicacion.length > 0 ? `${selectedFilters.ubicacion.length} sel.` : 'Todas';
-
-            renderDropdownOptions('dropdownUbicacion', Array.from(validLocations).sort(), 'ubicacion');
-        }
-
         function applyFilters() {
             filteredData = rawData.filter(item => {
                 let mLabel = item._dateObj.toLocaleString('es-MX', { month: 'long', year: 'numeric' });
-                
                 if(selectedFilters.mes.length > 0 && !selectedFilters.mes.includes(mLabel)) return false;
-                if(selectedFilters.edificio.length > 0 && !selectedFilters.edificio.includes(item.Edificio)) return false;
                 if(selectedFilters.ubicacion.length > 0 && !selectedFilters.ubicacion.includes(item.Ubicacion)) return false;
-                if(selectedFilters.servicio.length > 0 && !selectedFilters.servicio.includes(item.Servicio)) return false;
-                
+                if(selectedFilters.categoria.length > 0 && !selectedFilters.categoria.includes(item.Categoria)) return false;
                 return true;
             });
 
             document.getElementById('kpiTotalFolios').innerText = filteredData.length;
-            document.getElementById('kpiCategorias').innerText = new Set(filteredData.map(i => i.Servicio)).size;
+            document.getElementById('kpiCategorias').innerText = new Set(filteredData.map(i => i.Categoria)).size;
             document.getElementById('kpiUbicaciones').innerText = new Set(filteredData.map(i => i.Ubicacion)).size;
-            document.getElementById('kpiEdificios').innerText = new Set(filteredData.map(i => i.Edificio)).size;
 
             updateCharts();
             renderTables();
@@ -790,26 +698,22 @@
             Object.keys(charts).forEach(k => { if(charts[k]) charts[k].destroy(); });
             const colorsNeon = ['#06b6d4', '#f97316', '#10b981', '#a855f7', '#ec4899', '#eab308', '#3b82f6'];
 
-            // 1. Chart Tendencia Temporal (MES ACTUAL SELECCIONADO SOLAMENTE)
+            // 1. Chart Volumen General por Fecha
             let timeCounts = {};
             filteredData.sort((a,b) => a._dateObj - b._dateObj).forEach(i => {
                 let lbl = getFrequencyLabel(i._dateObj);
                 timeCounts[lbl] = (timeCounts[lbl] || 0) + 1;
             });
 
-            charts['tendencia'] = new Chart(document.getElementById('chartTendencia').getContext('2d'), {
-                type: 'line',
+            charts['volumen'] = new Chart(document.getElementById('chartVolumenFecha').getContext('2d'), {
+                type: 'bar',
                 data: {
                     labels: Object.keys(timeCounts),
                     datasets: [{
-                        label: 'Folios del Periodo Actual',
+                        label: 'Cantidad de Folios Atendidos',
                         data: Object.values(timeCounts),
-                        borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.15)',
-                        fill: true,
-                        tension: 0.3,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#06b6d4'
+                        backgroundColor: '#06b6d4',
+                        borderRadius: 4
                     }]
                 },
                 options: {
@@ -817,59 +721,22 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { labels: { color: '#f8fafc' } } },
                     scales: {
-                        x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-
-            // 2. Distribución de Ubicación
-            let ubiCounts = {};
-            filteredData.forEach(i => { ubiCounts[i.Ubicacion] = (ubiCounts[i.Ubicacion] || 0) + 1; });
-            charts['ubicacion'] = new Chart(document.getElementById('chartUbicacionDist').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(ubiCounts).slice(0, 6),
-                    datasets: [{
-                        data: Object.values(ubiCounts).slice(0, 6),
-                        backgroundColor: colorsNeon,
-                        borderColor: '#1e293b'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right', labels: { color: '#f8fafc', font: { size: 11 } } } }
-                }
-            });
-
-            // 3. Folios por Edificio
-            let bldgCounts = {};
-            filteredData.forEach(i => { bldgCounts[i.Edificio] = (bldgCounts[i.Edificio] || 0) + 1; });
-            charts['edificio'] = new Chart(document.getElementById('chartEdificioFolios').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(bldgCounts),
-                    datasets: [{ data: Object.values(bldgCounts), backgroundColor: '#a855f7' }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
                         x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
                         y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
                     }
                 }
             });
 
-            // 4. Top 10 Ubicaciones
+            // 2. Top 10 Ubicaciones (Horizontal Bar)
+            let ubiCounts = {};
+            filteredData.forEach(i => { ubiCounts[i.Ubicacion] = (ubiCounts[i.Ubicacion] || 0) + 1; });
             let sortedUbis = Object.entries(ubiCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+
             charts['topUbi'] = new Chart(document.getElementById('chartTopUbicaciones').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: sortedUbis.map(x => x[0]),
-                    datasets: [{ data: sortedUbis.map(x => x[1]), backgroundColor: '#10b981' }]
+                    datasets: [{ data: sortedUbis.map(x => x[1]), backgroundColor: '#10b981', borderRadius: 4 }]
                 },
                 options: {
                     indexAxis: 'y',
@@ -883,15 +750,16 @@
                 }
             });
 
-            // 5. Top 10 Categorías
-            let servCounts = {};
-            filteredData.forEach(i => { servCounts[i.Servicio] = (servCounts[i.Servicio] || 0) + 1; });
-            let sortedServs = Object.entries(servCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            // 3. Top 10 Categorías (Vertical Bar)
+            let catCounts = {};
+            filteredData.forEach(i => { catCounts[i.Categoria] = (catCounts[i.Categoria] || 0) + 1; });
+            let sortedCats = Object.entries(catCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+
             charts['topCat'] = new Chart(document.getElementById('chartTopCategorias').getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: sortedServs.map(x => x[0]),
-                    datasets: [{ data: sortedServs.map(x => x[1]), backgroundColor: '#f97316' }]
+                    labels: sortedCats.map(x => x[0]),
+                    datasets: [{ data: sortedCats.map(x => x[1]), backgroundColor: '#f97316', borderRadius: 4 }]
                 },
                 options: {
                     responsive: true,
@@ -906,30 +774,33 @@
         }
 
         function renderTables() {
+            // Historial detallado general
             let tbody = document.querySelector('#detailedTable tbody');
             tbody.innerHTML = '';
-            filteredData.slice(0, 15).forEach(item => {
+            filteredData.slice(0, 20).forEach(item => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.Fecha}</td><td><span class="badge">${item.Folio}</span></td><td>${item.Edificio}</td><td>${item.Ubicacion}</td><td>${item.Servicio}</td>`;
+                tr.innerHTML = `<td>${item.Fecha}</td><td><span class="badge">${item.Folio}</span></td><td>${item.Ubicacion}</td><td>${item.Categoria}</td>`;
                 tbody.appendChild(tr);
             });
 
-            let uniqueServices = Array.from(new Set(filteredData.map(i => i.Servicio))).slice(0,5);
-            let uniqueBuildings = Array.from(new Set(filteredData.map(i => i.Edificio)));
+            // Matriz Dinámica: Categorías vs Ubicaciones
+            let uniqueCats = Array.from(new Set(filteredData.map(i => i.Categoria))).slice(0, 5);
+            let uniqueUbis = Array.from(new Set(filteredData.map(i => i.Ubicacion))).slice(0, 12);
+            
             let matrixThead = document.querySelector('#matrixTable thead');
             let matrixTbody = document.querySelector('#matrixTable tbody');
 
-            let headerHtml = '<tr><th>Edificios</th>';
-            uniqueServices.forEach(s => { headerHtml += `<th>${s}</th>`; });
+            let headerHtml = '<tr><th>Ubicaciones Históricas</th>';
+            uniqueCats.forEach(c => { headerHtml += `<th>${c}</th>`; });
             headerHtml += '<th>Total</th></tr>';
             matrixThead.innerHTML = headerHtml;
 
             matrixTbody.innerHTML = '';
-            uniqueBuildings.forEach(b => {
-                let rowHtml = `<tr><td><strong>${b}</strong></td>`;
+            uniqueUbis.forEach(u => {
+                let rowHtml = `<tr><td><strong>${u}</strong></td>`;
                 let rowTotal = 0;
-                uniqueServices.forEach(s => {
-                    let count = filteredData.filter(x => x.Edificio === b && x.Servicio === s).length;
+                uniqueCats.forEach(c => {
+                    let count = filteredData.filter(x => x.Ubicacion === u && x.Categoria === c).length;
                     rowHtml += `<td>${count}</td>`;
                     rowTotal += count;
                 });
